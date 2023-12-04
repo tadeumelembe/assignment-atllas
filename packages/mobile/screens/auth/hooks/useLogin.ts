@@ -1,8 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
-import React from 'react'
-import { ApiResponse } from '../../../types';
-import { User, useAuth } from '../../../context/auth';
+import { ApiResponse, IUser } from '../../../types';
+import {  useAuth } from '../../../context/auth';
 
 export interface SignInForm {
   username: string,
@@ -26,7 +25,7 @@ export default function useLogin() {
       return axios.post<LoginResponse>(`${process.env.EXPO_PUBLIC_BACKEND_HOST}auth/login`, data)
     },
     onSuccess: ({ data }) => {
-      const user: User = {
+      const user: IUser = {
         token: data.data.token,
         displayName: data.data.user.displayName
       }
