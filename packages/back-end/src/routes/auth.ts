@@ -1,9 +1,9 @@
 import IRoute from '../types/IRoute';
-import {Router} from 'express';
-import {compareSync} from 'bcrypt';
-import {attachSession} from '../middleware/auth';
-import {sequelize, Session, User} from '../services/db';
-import {randomBytes} from 'crypto';
+import { Router } from 'express';
+import { compareSync, genSalt, hash } from 'bcrypt';
+import { attachSession } from '../middleware/auth';
+import { sequelize, Session, User } from '../services/db';
+import { randomBytes } from 'crypto';
 
 const AuthRouter: IRoute = {
   route: '/auth',
@@ -15,8 +15,8 @@ const AuthRouter: IRoute = {
     router.get('/', (req, res) => {
       if (req.session?.token?.id) {
         const {
-          token: {token, ...session},
-          user: {password, ...user},
+          token: { token, ...session },
+          user: { password, ...user },
         } = req.session;
         return res.json({
           success: true,
@@ -106,18 +106,82 @@ const AuthRouter: IRoute = {
         message: 'Authenticated Successfully.',
         data: {
           token: sessionToken,
+          user: user
         },
       });
     });
 
     // Attempt to register
-    router.post('/register', (req, res) => {
+    router.post('/register', async (req, res) => {
       // TODO
+      const {
+        username,
+        name,
+        password,
+      } = req.body;
+
+      if (!username || !password || !name) {
+        return res.status(400).json({
+          success: false,
+          message: 'Missing username/password/name.',
+        });
+      }
+
+      //Check if user exists
+      const user = await User.findOne({
+        where: sequelize.where(
+          sequelize.fn('lower', sequelize.col('username')),
+          sequelize.fn('lower', username),
+        ),
+      })
+      if (user) return res.status(400).json({
+        success: false,
+        message: 'Username already exists',
+      });
+
+      //Hash password
+      const salt = await genSalt(10)
+      const hashedPassword = await hash(password, salt)
+
+      const storedUser = await User.create({
+        username: username,
+        displayName: name,
+        password: hashedPassword,
+        registered: new Date()
+      }).catch(err => console.error('Error creating user.', err));
+
+      if (!storedUser) return passError('Error creating user', null, res);
+
+      return res.json({
+        success: true,
+        message: 'User Created Successfully.',
+        data: {
+          user: storedUser
+        },
+      });
+
+
     });
 
     // Log out
     router.post('/logout', (req, res) => {
       // TODO
+      if (req.session?.token?.id) {
+        res.cookie('SESSION_TOKEN', '', {
+          expires: new Date(Date.now()), // expire now
+          secure: false,
+          httpOnly: true,
+        });
+        return res.json({
+          success: true,
+          message: 'Logout Successfully',
+        });
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: 'Not authenticated',
+        });
+      }
     });
 
     return router;
