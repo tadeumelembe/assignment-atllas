@@ -1,11 +1,13 @@
-import {StatusBar} from 'expo-status-bar';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import Home from './screens/home/Home';
-import WebView from './screens/webview/WebView';
-import Login from './screens/auth/Login';
-import Register from './screens/auth/Register';
+import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ThemeProvider } from 'styled-components/native';
+
+import themes from './theme'
+import { AuthProvider } from './context/auth';
+import Routes from './routes';
 
 export type StackScreens = {
   Home: undefined,
@@ -14,20 +16,26 @@ export type StackScreens = {
   App: undefined,
 }
 
+const queryClient = new QueryClient()
+
 export const Stack = createNativeStackNavigator<StackScreens>();
+
+const theme = themes.light
 
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen name="Home" component={Home} />
-          <Stack.Screen name="Login" component={Login} />
-          <Stack.Screen name="Register" component={Register} />
-          <Stack.Screen name="App" component={WebView} />
-        </Stack.Navigator>
-      </NavigationContainer>
-      <StatusBar style="auto" />
-    </SafeAreaProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <ThemeProvider theme={theme}>
+          <SafeAreaProvider>
+            <NavigationContainer>
+             <Routes />
+            </NavigationContainer>
+            <StatusBar style="auto" />
+          </SafeAreaProvider>
+        </ThemeProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+
   );
 }
