@@ -1,10 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-export interface IUser {
-    displayName: string;
-    token: string;
-}
+import { IUser } from "../types";
 
 interface AuthContextI {
     user: IUser | null;

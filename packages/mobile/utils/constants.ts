@@ -1,0 +1,1 @@
+export const horizontal_padding = 10;
