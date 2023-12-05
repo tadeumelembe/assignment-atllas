@@ -1,10 +1,13 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { IUser } from "../types";
+import { ApiResponse, IUser } from "../types";
+import { useMutation } from "@tanstack/react-query";
+import axios, { AxiosError, AxiosResponse } from "axios";
 
 interface AuthContextI {
     user: IUser | null;
     signIn: (user: IUser) => Promise<void>;
+    signOut: () => Promise<AxiosResponse<any, any> | undefined>;
     isLoading: boolean;
 }
 
@@ -14,8 +17,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<IUser | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
+    const logInMutation = useMutation({
+        mutationKey: ['login'],
+        mutationFn: () => {
+            return axios.post(`${process.env.EXPO_PUBLIC_BACKEND_HOST}auth/logout`)
+        },
+        onSuccess: async ({ data }) => {
+            setUser(null)
+            setIsLoading(false)
+
+            await AsyncStorage.removeItem('@TakeHome_user')
+
+        },
+        onError: (err: AxiosError<ApiResponse>) => {
+            setIsLoading(false)
+            alert(err.response?.data?.message || 'Something went wrong, try again')
+            console.log(err, err?.response?.data)
+        },
+    })
+
     useEffect(() => {
-        signOut()
+        restoreUser()
     }, [])
 
     const signIn = async (user: IUser) => {
@@ -24,18 +46,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     async function signOut() {
-        try {
+        if (user?.token) {
             setIsLoading(true)
-
-            setUser(null)
-
-            return await AsyncStorage.removeItem('@TakeHome_user')
-
-        } catch (error) {
-            alert('Something went wrong')
-        } finally {
-            setIsLoading(false)
+            return logInMutation.mutateAsync();
         }
+
+        setUser(null)
+        await AsyncStorage.removeItem('@TakeHome_user')
     }
 
     async function restoreUser() {
@@ -55,8 +72,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         () => ({
             user,
             signIn,
+            signOut,
             isLoading
-        }), [user, isLoading, signIn]
+        }), [user, isLoading, signOut, signIn]
     )
 
     return (

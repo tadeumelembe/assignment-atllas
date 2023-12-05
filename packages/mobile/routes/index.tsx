@@ -5,7 +5,7 @@ import Register from '../screens/auth/Register';
 import WebView from '../screens/webview/WebView';
 import { useAuth } from "../context/auth";
 import { Container } from "../components/styledComponents";
-import { ActivityIndicator } from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
 import { useTheme } from "styled-components/native";
 
 export type StackScreens = {
@@ -33,9 +33,18 @@ function AuthRoutes() {
 }
 
 function AppRoutes() {
+    const {signOut} = useAuth()
     return (
         <AppStack.Navigator>
-            <AppStack.Screen name="App" component={WebView} />
+            <AppStack.Screen
+                name="App"
+                component={WebView}
+                options={{
+                    headerRight: () => (
+                        <TouchableOpacity onPress={()=>signOut()} style={{padding:5}}><Text>LogOut</Text></TouchableOpacity>
+                    ),
+                }}
+            />
             <AppStack.Screen name="Home" component={Home} />
         </AppStack.Navigator>
     )
