@@ -2,7 +2,7 @@ import IRoute from '../types/IRoute';
 import { Router } from 'express';
 import { compareSync, genSalt, hash } from 'bcrypt';
 import { attachSession } from '../middleware/auth';
-import { sequelize, Session, User } from '../services/db';
+import { ISession, sequelize, Session, User } from '../services/db';
 import { randomBytes } from 'crypto';
 
 const AuthRouter: IRoute = {
@@ -71,22 +71,9 @@ const AuthRouter: IRoute = {
       }
 
       // We now know the user is valid so it's time to mint a new session token.
-      const sessionToken = randomBytes(32).toString('hex');
-      let session;
-      try {
-        // Persist the token to the database.
-        session = await Session.create({
-          token: sessionToken,
-          user: user.dataValues.id,
-        });
-      } catch (e) {
-        return passError('Failed to create session.', e, res);
-      }
+      const { session, sessionToken } = await generateSession(user.dataValues.id)
 
-      if (!session) {
-        // Something broke on the database side. Not much we can do.
-        return passError('Returned session was nullish.', null, res);
-      }
+      if (!session) return passError('Returned session was nullish.', null, res);
 
       // We set the cookie on the response so that browser sessions will
       // be able to use it.
@@ -101,6 +88,7 @@ const AuthRouter: IRoute = {
       // take-home so you don't have to try and extract the cookie from
       // the response headers etc. Just know that this is a-standard
       // in non-oauth flows :)
+      delete user.dataValues.password;
       return res.json({
         success: true,
         message: 'Authenticated Successfully.',
@@ -152,10 +140,24 @@ const AuthRouter: IRoute = {
 
       if (!storedUser) return passError('Error creating user', null, res);
 
+
+      const { session, sessionToken } = await generateSession(storedUser.dataValues.id)
+
+      if (!session) return passError('Returned session was nullish.', null, res);
+
+      // We set the cookie on the response so that browser sessions will
+      // be able to use it.
+      res.cookie('SESSION_TOKEN', sessionToken, {
+        expires: new Date(Date.now() + (3600 * 24 * 7 * 1000)), // +7 days
+        secure: false,
+        httpOnly: true,
+      });
+
       return res.json({
         success: true,
         message: 'User Created Successfully.',
         data: {
+          token: sessionToken,
           user: storedUser
         },
       });
@@ -196,4 +198,24 @@ function passError(message, error, response) {
     success: false,
     message: `Internal: ${message}`,
   });
+}
+
+async function generateSession(user_id: number): Promise<{ session: ISession, sessionToken: string }> {
+  const sessionToken = randomBytes(32).toString('hex');
+
+  let session;
+  try {
+    // Persist the token to the database.
+    session = await Session.create({
+      token: sessionToken,
+      user: user_id,
+    });
+  } catch (e) {
+    return e;
+  }
+
+  return {
+    session,
+    sessionToken
+  };
 }
