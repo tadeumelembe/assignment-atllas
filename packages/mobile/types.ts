@@ -4,6 +4,7 @@ export interface ApiResponse {
 }
 
 export interface IUser {
-    displayName: string;
+    username:string;
+    displayName:string;
     token: string;
 }

@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
 import { ApiResponse, IUser } from '../../../types';
-import {  useAuth } from '../../../context/auth';
+import { useAuth } from '../../../context/auth';
 
 export interface SignInForm {
   username: string,
@@ -13,12 +13,14 @@ interface LoginResponse extends ApiResponse {
     token: string,
     user: {
       displayName: string;
+      username: string;
     }
   }
 }
 
 export default function useLogin() {
   const { signIn } = useAuth()
+  
   const logInMutation = useMutation({
     mutationKey: ['login'],
     mutationFn: (data: SignInForm) => {
@@ -27,7 +29,8 @@ export default function useLogin() {
     onSuccess: ({ data }) => {
       const user: IUser = {
         token: data.data.token,
-        displayName: data.data.user.displayName
+        displayName: data.data.user.displayName,
+        username: data.data.user.username
       }
       signIn(user)
     },
