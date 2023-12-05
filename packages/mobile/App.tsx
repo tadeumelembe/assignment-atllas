@@ -5,9 +5,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from 'styled-components/native';
 
-import themes from './theme'
-import { AuthProvider } from './context/auth';
-import Routes from './routes';
+import themes from './src/theme'
+import { AuthProvider } from './src/context/auth';
+import Routes from './src/routes';
 
 export type StackScreens = {
   Home: undefined,

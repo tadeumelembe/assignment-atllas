@@ -3,7 +3,7 @@ import { StyleSheet, } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useForm } from 'react-hook-form';
 
-import { StackScreens } from '../../App';
+import { StackScreens } from '../../../App';
 import { AuthBottomContainer, AuthHeader, Container, TextBody } from '../../components/styledComponents';
 import { ControlledInput } from '../../components/Input';
 import useRegister, { SignUpForm } from './hooks/useRegister';

@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query"
-import { ApiResponse, IUser } from "../../../types";
+import { ApiResponse, IUser } from "../../../../types";
 import axios, { AxiosError } from "axios";
 import { useAuth } from "../../../context/auth";
 

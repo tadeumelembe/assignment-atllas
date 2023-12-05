@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ApiResponse, IUser } from "../types";
+import { ApiResponse, IUser } from "../../types";
 import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosResponse } from "axios";
 

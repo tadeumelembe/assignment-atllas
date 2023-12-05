@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { StackScreens } from '../../App';
+import { StackScreens } from '../../../App';
 import { WebView as NativeWebView } from 'react-native-webview'
 import { useAuth } from '../../context/auth';
 

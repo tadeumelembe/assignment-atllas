@@ -1,5 +1,5 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {StackScreens} from '../../App';
+import {StackScreens} from '../../../App';
 import {StatusBar} from 'expo-status-bar';
 import {useCallback} from 'react';
 import {Button, StyleSheet, View} from 'react-native';

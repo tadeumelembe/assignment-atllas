@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
-import { ApiResponse, IUser } from '../../../types';
+import { ApiResponse, IUser } from '../../../../types';
 import { useAuth } from '../../../context/auth';
 
 export interface SignInForm {
