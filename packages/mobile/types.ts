@@ -1,6 +1,6 @@
 export interface ApiResponse {
     success:boolean;
-    message:'string'
+    message:string
 }
 
 export interface IUser {

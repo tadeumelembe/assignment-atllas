@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query"
 import { ApiResponse, IUser } from "../../../../types";
 import axios, { AxiosError } from "axios";
 import { useAuth } from "../../../context/auth";
+import { useEffect, useState } from "react";
 
 export interface SignUpForm {
     name: string,
@@ -20,11 +21,44 @@ interface RegisterResponse extends ApiResponse {
     }
 }
 
+interface UseRegisterProps {
+    usernameWatch: string
+}
 
-const useRegister = () => {
+const useRegister = ({ usernameWatch }: UseRegisterProps) => {
     const {
         signIn
     } = useAuth()
+    const [usernameExists, setUsernameExists] = useState(false);
+
+    const checkUsernameMutation = useMutation({
+        mutationKey: ['login'],
+        mutationFn: () => {
+            const params = {
+                username: usernameWatch
+            }
+            return axios.post<ApiResponse>(`${process.env.EXPO_PUBLIC_BACKEND_HOST}auth/checkUsername`, params)
+        },
+        onSuccess: ({ data }) => {
+            if (data.success) setUsernameExists(true);
+
+        },
+        onError: (err: AxiosError<ApiResponse>) => {
+            if (err.response?.data.message === 'username not found') setUsernameExists(false)
+            //dadasdalert(err.response?.data?.message || 'Something went wrong, try again')
+            console.log(err, err?.response?.data)
+        },
+    })
+
+    useEffect(() => {
+        if (!usernameWatch) return;
+        const debounceTimeout = setTimeout(async () => {
+            checkUsernameMutation.mutate()
+        }, 500); // Adjust the debounce time as needed (e.g., 300, 500, etc.)
+
+        return () => clearTimeout(debounceTimeout);
+    }, [usernameWatch]);
+
 
     const logInMutation = useMutation({
         mutationKey: ['login'],
@@ -46,6 +80,10 @@ const useRegister = () => {
         },
     })
 
+
+
+
+
     const handleRegister = (data: SignUpForm) => {
         delete data.confirm_password
         logInMutation.mutate(data)
@@ -53,6 +91,8 @@ const useRegister = () => {
 
     return {
         handleRegister,
+        usernameExists,
+        isCheckingUsername: checkUsernameMutation.isPending,
         isLoading: logInMutation.isPending
     }
 }

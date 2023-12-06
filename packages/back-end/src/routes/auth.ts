@@ -34,6 +34,33 @@ const AuthRouter: IRoute = {
       }
     });
 
+    // If we're authenticated, return basic user data.
+    router.post('/checkUsername', async (req, res) => {
+      const {
+        username,
+      } = req.body;
+
+      const user = await User.findOne({
+        where: sequelize.where(
+          sequelize.fn('lower', sequelize.col('username')),
+          sequelize.fn('lower', username),
+        ),
+      }).catch(err => console.error('User lookup failed.', err));
+
+      // Ensure the user exists. If not, return an error.
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'username not found',
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'username found',
+      });
+    });
+
     // Attempt to log in
     router.post('/login', async (req, res) => {
       const {

@@ -15,8 +15,8 @@ const ButtonPrimary = ({ buttonText, loading, btnSecondary, muted, ...otherProps
 
     return (
         <Button
-            {...otherProps}
             $secondary={btnSecondary}
+            {...otherProps}
         >
             {loading ? <ActivityIndicator color={colors.background} /> :
                 <ButtonText $secondary={btnSecondary}>{buttonText} </ButtonText>

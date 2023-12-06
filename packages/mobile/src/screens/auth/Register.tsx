@@ -1,31 +1,47 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, } from 'react-native';
+import { ActivityIndicator, StyleSheet, } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useForm } from 'react-hook-form';
+import { Entypo } from '@expo/vector-icons';
 
 import { StackScreens } from '../../../App';
 import { AuthBottomContainer, AuthHeader, Container, TextBody } from '../../components/styledComponents';
 import { ControlledInput } from '../../components/Input';
 import useRegister, { SignUpForm } from './hooks/useRegister';
 import { ButtonPrimary } from '../../components/Button';
+import { useTheme } from 'styled-components/native';
 
 export default function Register({ navigation }: NativeStackScreenProps<StackScreens, 'Register'>) {
+  const { colors } = useTheme()
 
   const { control, handleSubmit, watch } = useForm<SignUpForm>({
     defaultValues: {
       username: '',
-      name:'',
+      name: '',
       password: '',
       confirm_password: '',
     }
   });
 
   const passwordWatch = watch('password')
+  const usernameWatch = watch('username')
 
   const {
     handleRegister,
-    isLoading
-  } = useRegister()
+    isLoading,
+    usernameExists,
+    isCheckingUsername
+  } = useRegister({ usernameWatch })
+
+  const PasswordRightComponent = () => {
+    if (!usernameWatch) return null
+
+    if (isCheckingUsername) return <ActivityIndicator color={colors.muted} />
+
+    return (
+      <Entypo name={usernameExists ? "cross" : 'check'} size={24} color={usernameExists ? colors.danger : colors.tint} />
+    )
+  }
 
   return (
     <Container style={styles.container}>
@@ -51,6 +67,9 @@ export default function Register({ navigation }: NativeStackScreenProps<StackScr
         rules={{
           required: 'Username is required',
         }}
+        rightComponent={
+          <PasswordRightComponent />
+        }
       />
 
       <ControlledInput
@@ -80,7 +99,7 @@ export default function Register({ navigation }: NativeStackScreenProps<StackScr
         <ButtonPrimary
           buttonText='Create account'
           loading={isLoading}
-          disabled={isLoading}
+          disabled={isLoading || usernameExists || isCheckingUsername}
           onPress={handleSubmit(handleRegister)}
         />
 
