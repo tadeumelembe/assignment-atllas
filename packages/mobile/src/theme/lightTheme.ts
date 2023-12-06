@@ -7,7 +7,7 @@ export const lightTheme: DefaultTheme = {
   colors: {
     text: '#323232',
     border:"#D9D9D9",
-    muted:"#626262",
+    muted:"#ccc",
     background: '#ffffff',
     danger: '#f52f2f',
     tint: tintColorLight,

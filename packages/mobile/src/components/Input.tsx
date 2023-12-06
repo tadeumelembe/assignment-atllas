@@ -33,7 +33,7 @@ const ControlledInput = ({ control, rightComponent = null, name, rules, containe
                         />
                         {rightComponent}
                     </InputContainer>
-                    {error &&
+                    {error?.message &&
                         <TextError style={{ marginTop: 2 }}>{error?.message || 'Error'}</TextError>
                     }
                 </View>

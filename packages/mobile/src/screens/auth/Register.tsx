@@ -72,6 +72,7 @@ export default function Register({ navigation }: NativeStackScreenProps<StackScr
             containerStyle={styles.inputContainer}
             rules={{
               required: 'Username is required',
+              validate: () => (usernameExists === false),
             }}
             rightComponent={
               <PasswordRightComponent />
@@ -105,7 +106,7 @@ export default function Register({ navigation }: NativeStackScreenProps<StackScr
             <ButtonPrimary
               buttonText='Create account'
               loading={isLoading}
-              disabled={isLoading || usernameExists || isCheckingUsername}
+              disabled={isLoading || isCheckingUsername }
               onPress={handleSubmit(handleRegister)}
             />
 
