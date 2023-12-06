@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, } from 'react-native';
+import { StyleSheet, TouchableOpacity, } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useForm } from 'react-hook-form';
 
@@ -8,9 +8,11 @@ import { ControlledInput } from '../../components/Input';
 import useLogin, { SignInForm } from './hooks/useLogin';
 import { ButtonPrimary } from '../../components/Button';
 import { AuthBottomContainer, AuthHeader, Container, TextBody } from '../../components/styledComponents';
+import { Entypo } from '@expo/vector-icons';
+import { useTheme } from 'styled-components/native';
 
 export default function Login({ navigation }: NativeStackScreenProps<StackScreens, 'Login'>) {
-
+  const { colors } = useTheme()
   const { control, handleSubmit } = useForm<SignInForm>({
     defaultValues: {
       username: '',
@@ -20,8 +22,20 @@ export default function Login({ navigation }: NativeStackScreenProps<StackScreen
 
   const {
     handleLogin,
+    setShowPassword,
+    showPassword,
     isLoading
   } = useLogin()
+
+
+  const PasswordRightComponent = () => {
+    return (
+      <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+        <Entypo name={showPassword ? "eye" : 'eye-with-line'} size={24} color={!showPassword ? colors.muted : colors.tint} />
+      </TouchableOpacity>
+    )
+  }
+
 
   return (
     <Container style={[styles.container]}>
@@ -43,11 +57,14 @@ export default function Login({ navigation }: NativeStackScreenProps<StackScreen
         control={control}
         containerStyle={styles.inputContainer}
         name='password'
-        secureTextEntry
+        secureTextEntry={!showPassword}
         placeholder='Password'
         rules={{
           required: 'Password is required',
         }}
+        rightComponent={
+          <PasswordRightComponent />
+        }
       />
 
       <AuthBottomContainer>

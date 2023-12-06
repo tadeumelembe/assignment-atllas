@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
 import { ApiResponse, IUser } from '../../../../types';
 import { useAuth } from '../../../context/auth';
+import { useState } from 'react';
 
 export interface SignInForm {
   username: string,
@@ -20,6 +21,7 @@ interface LoginResponse extends ApiResponse {
 
 export default function useLogin() {
   const { signIn } = useAuth()
+  const [showPassword, setShowPassword] = useState(false)
   
   const logInMutation = useMutation({
     mutationKey: ['login'],
@@ -44,6 +46,8 @@ export default function useLogin() {
 
   return {
     handleLogin,
+    showPassword,
+    setShowPassword,
     isLoading: logInMutation.isPending
   }
 }

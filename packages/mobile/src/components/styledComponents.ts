@@ -45,12 +45,16 @@ export const ButtonText = styled.Text<{ $secondary?: boolean }>`
 `;
 
 export const Input = styled.TextInput<{ $focused?: boolean }>`
-    border-bottom-width: 2px;
-    border-color: ${props => props.$focused ? props.theme.colors.tint : props.theme.colors.border};
     width: '100%';
     font-size: 13px;
     color:${props => props.theme.colors.text};
+    flex:1;
+`
+
+export const InputContainer = styled.View<{ $focused?: boolean }>`
+    border-bottom-width: 2px;
     padding: 8px;
+    border-color: ${props => props.$focused ? props.theme.colors.tint : props.theme.colors.border};
 `
 
 export const Text = styled.Text`
