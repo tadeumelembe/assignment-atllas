@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, TouchableOpacity, } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TouchableOpacity, } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useForm } from 'react-hook-form';
 
@@ -38,52 +38,60 @@ export default function Login({ navigation }: NativeStackScreenProps<StackScreen
 
 
   return (
-    <Container style={[styles.container]}>
-      <StatusBar style="auto" />
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView keyboardShouldPersistTaps='handled' showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }} showsHorizontalScrollIndicator={false} >
 
-      <AuthHeader>App Name</AuthHeader>
+        <Container style={[styles.container]}>
+          <StatusBar style="auto" />
 
-      <ControlledInput
-        control={control}
-        name='username'
-        placeholder='Username'
-        containerStyle={styles.inputContainer}
-        rules={{
-          required: 'Username is required',
-        }}
-      />
+          <AuthHeader>App Name</AuthHeader>
 
-      <ControlledInput
-        control={control}
-        containerStyle={styles.inputContainer}
-        name='password'
-        secureTextEntry={!showPassword}
-        placeholder='Password'
-        rules={{
-          required: 'Password is required',
-        }}
-        rightComponent={
-          <PasswordRightComponent />
-        }
-      />
+          <ControlledInput
+            control={control}
+            name='username'
+            placeholder='Username'
+            containerStyle={styles.inputContainer}
+            rules={{
+              required: 'Username is required',
+            }}
+          />
 
-      <AuthBottomContainer>
-        <ButtonPrimary
-          buttonText='Login'
-          loading={isLoading}
-          disabled={isLoading}
-          onPress={handleSubmit(handleLogin)}
-        />
+          <ControlledInput
+            control={control}
+            containerStyle={styles.inputContainer}
+            name='password'
+            secureTextEntry={!showPassword}
+            placeholder='Password'
+            rules={{
+              required: 'Password is required',
+            }}
+            rightComponent={
+              <PasswordRightComponent />
+            }
+          />
 
-        <TextBody style={{ textAlign: 'center', marginTop: 25, marginBottom: 10 }}>Don't have an account?</TextBody>
+          <AuthBottomContainer>
+            <ButtonPrimary
+              buttonText='Login'
+              loading={isLoading}
+              disabled={isLoading}
+              onPress={handleSubmit(handleLogin)}
+            />
 
-        <ButtonPrimary
-          buttonText='Create account'
-          btnSecondary
-          onPress={() => navigation.navigate('Register')}
-        />
-      </AuthBottomContainer>
-    </Container>
+            <TextBody style={{ textAlign: 'center', marginTop: 25, marginBottom: 10 }}>Don't have an account?</TextBody>
+
+            <ButtonPrimary
+              buttonText='Create account'
+              btnSecondary
+              onPress={() => navigation.navigate('Register')}
+            />
+          </AuthBottomContainer>
+        </Container>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
