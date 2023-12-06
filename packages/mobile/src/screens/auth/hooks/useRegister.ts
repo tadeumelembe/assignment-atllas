@@ -4,8 +4,10 @@ import axios, { AxiosError } from "axios";
 import { useAuth } from "../../../context/auth";
 
 export interface SignUpForm {
+    name: string,
     username: string,
-    password: string
+    password: string,
+    confirm_password?: string
 }
 
 interface RegisterResponse extends ApiResponse {
@@ -44,7 +46,10 @@ const useRegister = () => {
         },
     })
 
-    const handleRegister = (data: SignUpForm) => logInMutation.mutate(data);
+    const handleRegister = (data: SignUpForm) => {
+        delete data.confirm_password
+        logInMutation.mutate(data)
+    };
 
     return {
         handleRegister,

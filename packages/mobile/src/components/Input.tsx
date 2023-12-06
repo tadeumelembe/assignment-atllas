@@ -20,8 +20,8 @@ const ControlledInput = ({ control, rightComponent = null, name, rules, containe
             name={name}
             rules={rules}
             render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                <InputContainer $focused={isFocused} style={containerStyle}>
-                    <View style={{ flexDirection: 'row',alignItems:'center', justifyContent: 'space-between' }}>
+                <View style={containerStyle}>
+                    <InputContainer $focused={isFocused} style={{ flexDirection: 'row',alignItems:'center', justifyContent: 'space-between' }}>
                         <Input
                             {...otherProps}
                             onBlur={() => setIsFocused(false)}
@@ -32,11 +32,11 @@ const ControlledInput = ({ control, rightComponent = null, name, rules, containe
                             
                         />
                         {rightComponent}
-                    </View>
+                    </InputContainer>
                     {error &&
                         <TextError style={{ marginTop: 2 }}>{error?.message || 'Error'}</TextError>
                     }
-                </InputContainer>
+                </View>
             )}
 
         />

@@ -10,12 +10,17 @@ import useRegister, { SignUpForm } from './hooks/useRegister';
 import { ButtonPrimary } from '../../components/Button';
 
 export default function Register({ navigation }: NativeStackScreenProps<StackScreens, 'Register'>) {
-  const { control, handleSubmit } = useForm<SignUpForm>({
+
+  const { control, handleSubmit, watch } = useForm<SignUpForm>({
     defaultValues: {
       username: '',
+      name:'',
       password: '',
+      confirm_password: '',
     }
   });
+
+  const passwordWatch = watch('password')
 
   const {
     handleRegister,
@@ -59,6 +64,18 @@ export default function Register({ navigation }: NativeStackScreenProps<StackScr
         }}
       />
 
+      <ControlledInput
+        control={control}
+        containerStyle={styles.inputContainer}
+        name='confirm_password'
+        secureTextEntry
+        placeholder='Confirm Password'
+        rules={{
+          required: 'Please confirm your password',
+          validate: (value: string) => (value === passwordWatch || passwordWatch === '') || "Passwords don't match",
+        }}
+      />
+
       <AuthBottomContainer>
         <ButtonPrimary
           buttonText='Create account'
@@ -67,7 +84,7 @@ export default function Register({ navigation }: NativeStackScreenProps<StackScr
           onPress={handleSubmit(handleRegister)}
         />
 
-        <TextBody style={{ textAlign: 'center', marginTop: 25,marginBottom:10 }}>Already have an account?</TextBody>
+        <TextBody style={{ textAlign: 'center', marginTop: 25, marginBottom: 10 }}>Already have an account?</TextBody>
 
 
         <ButtonPrimary
